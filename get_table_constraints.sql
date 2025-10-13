@@ -6,7 +6,8 @@ RETURNS TABLE (
     constraint_type text,
     column_name text,
     definition text,
-    table_name text
+    table_name text,
+    md5 text
 )
 AS $$
 DECLARE
@@ -29,11 +30,18 @@ BEGIN
             table_name AS table_name
         )
         SELECT
-          tc.constraint_name::text,
-          tc.constraint_type::text,
-          kcu.column_name::text,
-          pg_get_constraintdef(c.oid)::text,
-          schema_table::text AS table_name
+          tc.constraint_name::text AS constraint_name,
+          tc.constraint_type::text AS constraint_type,
+          kcu.column_name::text AS column_name,
+          pg_get_constraintdef(c.oid)::text AS definition,
+          schema_table::text AS table_name,
+          md5(
+            COALESCE(tc.constraint_name, 'N/A') || ':' ||
+            COALESCE(tc.constraint_type, 'N/A') || ':' ||
+            COALESCE(kcu.column_name, 'N/A') || ':' ||
+            COALESCE(pg_get_constraintdef(c.oid), 'N/A') || ':' ||
+            schema_table
+          ) AS md5
         FROM
           information_schema.table_constraints tc
         LEFT JOIN
@@ -52,11 +60,14 @@ BEGIN
         UNION ALL
 
         SELECT
-          NULL,
-          'NOT NULL',
-          col.column_name::text,
-          'NOT NULL',
-          schema_table::text AS table_name
+          NULL AS constraint_name,
+          'NOT NULL' AS constraint_type,
+          col.column_name::text AS column_name,
+          'NOT NULL' AS definition,
+          schema_table::text AS table_name,
+          md5(
+            'NOT NULL:' || col.column_name || ':' || schema_table
+          ) AS md5
         FROM
           information_schema.columns col
         JOIN
