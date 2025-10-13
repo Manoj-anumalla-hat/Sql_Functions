@@ -34,7 +34,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
---==== TABLE VIEW ======
+
 CREATE VIEW public.customer_orders AS
 SELECT o.order_id, c.first_name, o.order_date
 FROM orders o
