@@ -6,7 +6,8 @@ RETURNS TABLE (
     table_name text,
     dependent_view_schema text,
     dependent_view_name text,
-    view_definition text
+    view_definition text,
+    md5 text
 )
 AS $$
 BEGIN
@@ -23,7 +24,14 @@ BEGIN
         st_c.relname::text AS table_name,
         dv_ns.nspname::text AS dependent_view_schema,
         dv_c.relname::text AS dependent_view_name,
-        pg_catalog.pg_get_viewdef(dv_c.oid, true)::text AS view_definition
+        pg_catalog.pg_get_viewdef(dv_c.oid, true)::text AS view_definition,
+        md5(
+            st_ns.nspname || '.' ||
+            st_c.relname || '->' ||
+            dv_ns.nspname || '.' ||
+            dv_c.relname || '::' ||
+            pg_catalog.pg_get_viewdef(dv_c.oid, true)
+        ) AS md5
     FROM pg_catalog.pg_class AS st_c -- source table class
     JOIN pg_catalog.pg_namespace AS st_ns ON st_ns.oid = st_c.relnamespace
     JOIN input_tables AS it ON it.schema_name = st_ns.nspname AND it.table_name = st_c.relname
