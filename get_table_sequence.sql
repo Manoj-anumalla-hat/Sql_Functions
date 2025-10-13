@@ -4,7 +4,8 @@ CREATE OR REPLACE FUNCTION get_table_sequences(table_names text[])
 RETURNS TABLE(
   table_schema name,
   table_name name,
-  sequence_name name
+  sequence_name name,
+  md5 text
 ) AS $$
 DECLARE
   fq_table text;
@@ -23,7 +24,8 @@ BEGIN
     SELECT
         t.table_schema::name,
         t.table_name::name,
-        SPLIT_PART(t.column_default, '''', 2)::name
+        SPLIT_PART(t.column_default, '''', 2)::name AS sequence_name,
+        md5(t.table_schema || '.' || t.table_name || '.' || SPLIT_PART(t.column_default, '''', 2)) AS md5
     FROM
         information_schema.columns AS t
     WHERE
@@ -34,4 +36,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- SELECT * FROM get_table_sequences(ARRAY['public.customer_orders','public.orders','public.customers','sales.orders','sales.employees','public.employees']);
+-- SELECT * FROM get_table_sequences(ARRAY['public.orders','sales.orders','sales.employees','public.employees']);
