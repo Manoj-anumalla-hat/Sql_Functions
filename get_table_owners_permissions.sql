@@ -7,7 +7,8 @@ RETURNS TABLE (
     object_name name,
     object_type text,
     ownername name,
-    privileges text
+    privileges text,
+    md5 text
 )
 LANGUAGE sql
 AS $$
@@ -53,7 +54,23 @@ SELECT
     COALESCE(
         pg_catalog.array_to_string(c.relacl, E'\n'),
         'Default (All for owner)'
-    ) AS privileges
+    ) AS privileges,
+    md5(
+        tt.schemaname || '.' ||
+        tt.tablename || '.' ||
+        c.relname || '.' ||
+        CASE c.relkind
+            WHEN 'r' THEN 'Table'
+            WHEN 'i' THEN 'Index'
+            WHEN 'S' THEN 'Sequence'
+            WHEN 'v' THEN 'View'
+            WHEN 'f' THEN 'Foreign Table'
+            WHEN 'p' THEN 'Partitioned Table'
+            WHEN 't' THEN 'Toast Table'
+            ELSE c.relkind::text
+        END || '.' ||
+        pg_get_userbyid(c.relowner)
+    ) AS md5
 FROM
     pg_class c
 JOIN
