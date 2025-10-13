@@ -7,7 +7,8 @@ RETURNS TABLE (
     trigger_name text,
     trigger_definition text,
     trigger_function_name text,
-    trigger_function_definition text
+    trigger_function_definition text,
+    md5 text
 )
 AS $$
 BEGIN
@@ -24,7 +25,14 @@ BEGIN
         t.tgname::text AS trigger_name,
         pg_catalog.pg_get_triggerdef(t.oid, true)::text AS trigger_definition,
         p.proname::text AS trigger_function_name,
-        pg_catalog.pg_get_functiondef(p.oid)::text AS trigger_function_definition
+        pg_catalog.pg_get_functiondef(p.oid)::text AS trigger_function_definition,
+        md5(
+            n.nspname || '.' ||
+            c.relname || '.' ||
+            t.tgname || '.' ||
+            p.proname || '::' ||
+            pg_catalog.pg_get_functiondef(p.oid)
+        ) AS md5
     FROM pg_catalog.pg_trigger AS t
     JOIN pg_catalog.pg_class AS c ON c.oid = t.tgrelid
     JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
