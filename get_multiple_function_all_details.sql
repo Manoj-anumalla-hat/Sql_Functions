@@ -1,7 +1,19 @@
 --- 2. Create a function to return the function definition and access params in the table format 
 CREATE OR REPLACE FUNCTION public.get_multiple_function_all_details(func_names text[])
- RETURNS TABLE(function_name text, arg_name text, function_definition text, owner_name text, define_privileges text, execute_privileges text, security_definer boolean, is_strict boolean, volatility text, return_type text)
- LANGUAGE sql
+RETURNS TABLE(
+    function_name text,
+    arg_name text,
+    function_definition text,
+    owner_name text,
+    define_privileges text,
+    execute_privileges text,
+    security_definer boolean,
+    is_strict boolean,
+    volatility text,
+    return_type text,
+    md5 text
+)
+LANGUAGE sql
 AS $function$
 WITH FUNC AS (
     SELECT
@@ -59,9 +71,37 @@ SELECT
     security_definer,
     is_strict,
     volatility,
-    return_type
+    return_type,
+    md5(
+        function_name || ':' ||
+        COALESCE(arg_name,'') || ':' ||
+        function_definition || ':' ||
+        (SELECT rolname FROM pg_roles WHERE oid = owner_oid) || ':' ||
+        (SELECT rolname FROM pg_roles WHERE oid = owner_oid) || ':' ||
+        CASE
+            WHEN proacl IS NOT NULL THEN
+                array_to_string(
+                    ARRAY(
+                        SELECT DISTINCT
+                            CASE split_part(aclitem::text, '=', 1)
+                                WHEN '' THEN 'PUBLIC'
+                                ELSE split_part(aclitem::text, '=', 1)
+                            END
+                        FROM unnest(proacl) AS aclitem
+                        WHERE position('X' IN split_part(aclitem::text, '=', 2)) > 0
+                        UNION
+                        SELECT (SELECT rolname FROM pg_roles WHERE oid = owner_oid)
+                    ), ', '
+                )
+            ELSE 'PUBLIC, ' || (SELECT rolname FROM pg_roles WHERE oid = owner_oid)
+        END || ':' ||
+        security_definer::text || ':' ||
+        is_strict::text || ':' ||
+        volatility || ':' ||
+        return_type
+    ) AS md5
 FROM args
 ORDER BY function_name, arg_name NULLS FIRST;
-$function$
+$function$;
 
 -- select * from get_multiple_function_all_details(ARRAY['get_table_details']);
