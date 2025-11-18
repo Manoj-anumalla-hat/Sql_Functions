@@ -46,7 +46,10 @@ AS $function$
         SELECT * FROM pdcd_schema.get_table_constraints_md5(p_table_list)
         UNION ALL
         SELECT * FROM pdcd_schema.get_table_indexes_md5(p_table_list)
-
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_table_references_md5(p_table_list)
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_table_triggers_md5(p_table_list)
     ),
     inserted AS (
         INSERT INTO pdcd_schema.md5_metadata_tbl (
@@ -93,7 +96,7 @@ AS $function$
     ORDER BY i.schema_name, i.object_type_name, i.object_subtype;
 $function$;
 
--- \i '/Users/manoj_anumalla/Desktop/PDCD/PDCD/sql_dev/load_compare/load_md5_metadata_tbl.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/load_md5_metadata_tbl.sql'
 
 
 -- md5_metadata_tbl
