@@ -45,7 +45,7 @@ BEGIN
 END;
 $function$;
 
--- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/Objects/table_objects/references/get_table_references_md5.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/objects_sql_functions/references/get_table_references_md5.sql'
 
 -- SELECT * FROM pdcd_schema.get_table_references_md5(ARRAY['analytics_schema']);
 -- SELECT * FROM get_table_references_md5(ARRAY['sales','public']);

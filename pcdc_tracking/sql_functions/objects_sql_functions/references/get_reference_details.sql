@@ -78,5 +78,6 @@ WHERE con.contype = 'f'
 ORDER BY src_ns.nspname, src_tbl.relname, con.conname, src_cols.ord;
 
 $function$;
+
 -- SELECT * FROM pdcd_schema.get_reference_details(ARRAY['analytics_schema']);
--- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/Objects/table_objects/references/get_reference_details.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/objects_sql_functions/references/get_reference_details.sql'

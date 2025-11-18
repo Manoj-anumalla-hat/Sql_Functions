@@ -69,6 +69,16 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_references_md5(p_table_list)
+        UNION ALL
+        SELECT 
+            schema_name,
+            object_type,
+            object_type_name,
+            object_subtype,
+            object_subtype_name,
+            object_subtype_details,
+            object_md5
+        FROM pdcd_schema.get_table_triggers_md5(p_table_list)
     ),
     
     -- Get staging metadata (previous snapshot) for both columns and constraints
@@ -308,7 +318,7 @@ AS $function$
 $function$;
 
 
--- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/load_compare/compare_load_md5_metadata_tbl.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/compare_load_md5_metadata_tbl.sql'
 
 
 -- md5_metadata_tbl

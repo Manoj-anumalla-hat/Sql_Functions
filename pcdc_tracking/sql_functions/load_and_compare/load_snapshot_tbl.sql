@@ -19,4 +19,4 @@ AS $function$
 $function$;
 
 
--- \i '/Users/jagdish_pandre/PDCD/sql_dev/Objects/load_snapshot_tbl.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/load_snapshot_tbl.sql'

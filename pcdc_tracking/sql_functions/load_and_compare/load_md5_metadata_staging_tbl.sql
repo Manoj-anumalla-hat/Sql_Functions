@@ -51,6 +51,8 @@ AS $function$
         SELECT DISTINCT * FROM pdcd_schema.get_table_indexes_md5(p_table_list)
         UNION ALL
         SELECT DISTINCT * FROM pdcd_schema.get_table_references_md5(p_table_list)
+        UNION ALL
+        SELECT DISTINCT * FROM pdcd_schema.get_table_triggers_md5(p_table_list)
     ),
     inserted AS (
         INSERT INTO pdcd_schema.md5_metadata_staging_tbl (
@@ -95,5 +97,6 @@ AS $function$
 $function$;
 
 
--- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/load_compare/load_md5_metadata_staging_tbl.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/load_md5_metadata_staging_tbl.sql'
+
 -- SELECT * FROM pdcd_schema.load_md5_metadata_staging_tbl(ARRAY['analytics_schema']);
