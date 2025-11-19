@@ -78,16 +78,16 @@ BEGIN
         -- Timing
         ----------------------------------------------------------------------------
         CASE
-            WHEN (t.tgtype & 1) <> 0 THEN 'BEFORE'
-            WHEN (t.tgtype & 2) <> 0 THEN 'AFTER'
+            WHEN (t.tgtype & 2) <> 0 THEN 'BEFORE'
             WHEN (t.tgtype & 64) <> 0 THEN 'INSTEAD OF'
+            ELSE 'AFTER'
         END AS trigger_timing,
 
         ----------------------------------------------------------------------------
         -- Level (ROW or STATEMENT)
         ----------------------------------------------------------------------------
         CASE
-            WHEN (t.tgtype & (1 << 8)) <> 0 THEN 'ROW'
+            WHEN (t.tgtype & 1) <> 0 THEN 'ROW'
             ELSE 'STATEMENT'
         END AS trigger_level,
 
@@ -115,6 +115,6 @@ END;
 $function$;
 
 
--- \i '/Users/manoj_anumalla/Desktop/PDCD/PDCD/sql_dev/Objects/table_objects/triggers/trigger_details.sql'
+-- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/objects_sql_functions/triggers/get_trigger_details.sql'
 
 -- SELECT * FROM get_trigger_details(ARRAY['analytics_schema']);
