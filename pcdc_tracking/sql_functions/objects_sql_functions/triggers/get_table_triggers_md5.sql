@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION get_table_triggers_md5(
+CREATE OR REPLACE FUNCTION pdcd_schema.get_table_triggers_md5(
     p_table_list TEXT[] DEFAULT NULL
 )
 RETURNS TABLE(
