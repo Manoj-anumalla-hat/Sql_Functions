@@ -28,7 +28,7 @@ BEGIN
         INTO v_all_tables
         FROM pg_class c
         JOIN pg_namespace n ON n.oid = c.relnamespace
-        WHERE c.relkind = 'r'
+        WHERE c.relkind IN ('r','v')
           AND n.nspname NOT IN ('pg_catalog','information_schema');
 
     ELSIF NOT EXISTS (
@@ -40,7 +40,7 @@ BEGIN
         FROM pg_class c
         JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE n.nspname = ANY(p_table_list)
-          AND c.relkind = 'r';
+          AND c.relkind IN ('r','v');
 
     ELSE
         -- CASE 3: schema.table list
@@ -53,6 +53,11 @@ BEGIN
     RETURN QUERY
     SELECT
         n.nspname::TEXT AS schema_name,
+        CASE 
+            WHEN t.relkind = 'r' THEN 'Table'
+       -- WHEN t.relkind = 'v' THEN 'View'
+            WHEN t.relkind = 'm' THEN ' View'
+        END AS object_type,
         c.relname::TEXT AS table_name,
         t.tgname::TEXT AS trigger_name,
         pg_get_triggerdef(t.oid)::TEXT AS trigger_definition,
@@ -113,8 +118,3 @@ BEGIN
 
 END;
 $function$;
-
-
--- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/objects_sql_functions/triggers/get_trigger_details.sql'
-
--- SELECT * FROM get_trigger_details(ARRAY['analytics_schema']);

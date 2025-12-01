@@ -1,6 +1,4 @@
-
-
--- Combined metadata change detection for both columns, constraints and indexes
+-- Combined metadata change detection for columns, constraints, indexes, references, triggers, sequences, and functions
 -- Detects: RENAMED, MODIFIED, ADDED, DELETED changes
 
 CREATE OR REPLACE FUNCTION pdcd_schema.compare_load_md5_metadata_tbl(
@@ -28,8 +26,9 @@ AS $function$
             clock_timestamp() AS processed_time
     ),
     
-    -- Get current metadata for both columns and constraints
+    -- Get current metadata for all object types
     current_metadata_cte AS (
+        -- Columns
         SELECT 
             schema_name,
             object_type,
@@ -39,7 +38,10 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_columns_md5(p_table_list)
+        
         UNION ALL
+        
+        -- Constraints
         SELECT 
             schema_name,
             object_type,
@@ -49,7 +51,10 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_constraints_md5(p_table_list)
+        
         UNION ALL
+        
+        -- Indexes
         SELECT 
             schema_name,
             object_type,
@@ -59,7 +64,10 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_indexes_md5(p_table_list)
+        
         UNION ALL
+        
+        -- References
         SELECT 
             schema_name,
             object_type,
@@ -69,7 +77,10 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_references_md5(p_table_list)
+        
         UNION ALL
+        
+        -- Triggers
         SELECT 
             schema_name,
             object_type,
@@ -79,9 +90,35 @@ AS $function$
             object_subtype_details,
             object_md5
         FROM pdcd_schema.get_table_triggers_md5(p_table_list)
+        
+        UNION ALL
+        
+        -- Sequences
+        SELECT 
+            schema_name,
+            object_type,
+            object_type_name,
+            object_subtype,
+            object_subtype_name,
+            object_subtype_details,
+            object_md5
+        FROM pdcd_schema.get_table_sequences_md5(p_table_list)
+        
+    --     UNION ALL
+        
+    --     -- Functions (NEW)
+    --     SELECT 
+    --         schema_name,
+    --         object_type,
+    --         object_type_name,
+    --         object_subtype,
+    --         object_subtype_name,
+    --         object_subtype_details,
+    --         object_md5
+    --     FROM pdcd_schema.get_table_functions_md5(p_table_list)
     ),
     
-    -- Get staging metadata (previous snapshot) for both columns and constraints
+    -- Get staging metadata (previous snapshot) for all object types
     staging_metadata_cte AS (
         SELECT 
             schema_name,
@@ -95,7 +132,7 @@ AS $function$
     ),
     
     -- Step 1: Detect RENAMED objects (same MD5, different name)
-    -- Applies to both columns and constraints
+    -- Applies to all object types
     renamed_objects AS (
         SELECT
             c.schema_name,
@@ -120,7 +157,7 @@ AS $function$
     ),
     
     -- Step 2: Detect MODIFIED objects (same name, different definition)
-    -- Applies to both columns and constraints
+    -- Applies to all object types
     modified_objects AS (
         SELECT
             c.schema_name,
@@ -175,7 +212,7 @@ AS $function$
         FROM modified_objects
     ),
     
-    -- Step 3: Detect ADDED objects (new columns/constraints)
+    -- Step 3: Detect ADDED objects (new objects)
     added_objects AS (
         SELECT
             c.schema_name,
@@ -210,7 +247,7 @@ AS $function$
         )
     ),
     
-    -- Step 4: Detect DELETED objects (removed columns/constraints)
+    -- Step 4: Detect DELETED objects (removed objects)
     deleted_objects AS (
         SELECT
             s.schema_name,
@@ -245,7 +282,7 @@ AS $function$
         )
     ),
     
-    -- Step 5: Combine all changes for both columns and constraints
+    -- Step 5: Combine all changes for all object types
     unified_changes AS (
         SELECT * FROM renamed_objects
         UNION ALL
@@ -294,7 +331,7 @@ AS $function$
             change_type
     )
     
-    -- Step 7: Return results for both columns and constraints
+    -- Step 7: Return results for all object types
     SELECT
         i.metadata_id,
         i.snapshot_id,
@@ -317,13 +354,4 @@ AS $function$
         i.change_type;
 $function$;
 
-
--- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/compare_load_md5_metadata_tbl.sql'
-
-
--- md5_metadata_tbl
-
--- SELECT * FROM pdcd_schema.compare_load_column_md5_metadata_tbl(ARRAY['analytics_schema']);
-
--- SELECT * FROM pdcd_schema.load_snapshot_tbl();
--- SELECT * FROM pdcd_schema.compare_load_column_md5_metadata_tbl(ARRAY['analytics_schema']);
+-- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/load_compare/compare_load_md5_metadata_tbl.sql'

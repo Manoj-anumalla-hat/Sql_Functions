@@ -88,7 +88,7 @@ $function$;
 -- SELECT * FROM pdcd_schema.get_columns_details(ARRAY['pdcd_schema.snapshot_tbl']);
 -- SELECT * FROM pdcd_schema.get_columns_details(ARRAY['analytics_schema.departments']);
 
--- SELECT * FROM pdcd_schema.get_columns_details('public.sales,analytics.customers');
+-- SELECT * FROM pdcd_schema.get_columns_details(ARRAY['sales','hr']);
 
 -- -- Example: compute md5 hash for columns
 -- SELECT

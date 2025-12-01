@@ -18,7 +18,7 @@ DROP table IF EXISTS analytics_schema.departments;
 
 CREATE TABLE analytics_schema.departments (
     department_id SERIAL PRIMARY KEY,
-    department_name VARCHAR(100) NOT NULL,
+    department_name VARCHAR(50) NOT NULL,
     main_location VARCHAR(100),
     ternary_location VARCHAR(100),
     manager_id INT,
@@ -38,9 +38,9 @@ CREATE TABLE analytics_schema.employees (
 
 
 -- First Run
-    SELECT * FROM pdcd_schema.load_snapshot_tbl();
-    SELECT * FROM pdcd_schema.load_md5_metadata_tbl(ARRAY['analytics_schema']);
-    SELECT * FROM pdcd_schema.load_md5_metadata_staging_tbl(ARRAY['analytics_schema']);
+SELECT * FROM pdcd_schema.load_snapshot_tbl();
+SELECT * FROM pdcd_schema.load_md5_metadata_tbl(ARRAY['analytics_schema']);
+SELECT * FROM pdcd_schema.load_md5_metadata_staging_tbl(ARRAY['analytics_schema']);
 
 -- Main Table MD5 Metadata changes
 -- select    metadata_id,    snapshot_id,    object_type_name,    object_subtype,    object_subtype_name,  object_md5,    processed_time,  change_type FROM pdcd_schema.md5_metadata_tbl;
@@ -314,9 +314,6 @@ EXECUTE FUNCTION analytics_schema.fn_department_update_audit();
 
 
 
-
-
-
 -- Test Run 5 — Final Mixed Changes
 
 ALTER TRIGGER trg_emp_delete_log
@@ -367,3 +364,6 @@ DROP TRIGGER trg_department_update_audit ON analytics_schema.departments;
           74 |          30 | employees        | Trigger        | trg_employee_salary_check_extra | 4b9ccd697eb9a5214f3adc899d43afbd | 2025-11-18 21:36:37.705984 | ADDED
           75 |          30 | departments      | Trigger        | trg_department_update_audit     | 57cbfddaf8caebc633bbd8a1b16c1894 | 2025-11-18 21:36:37.706059 | DELETED
 (75 rows)
+
+
+select    metadata_id,    snapshot_id,    schema_name,  object_type, object_type_name,    object_subtype,    object_subtype_name,  object_md5,    processed_time,  change_type FROM pdcd_schema.md5_metadata_tbl;

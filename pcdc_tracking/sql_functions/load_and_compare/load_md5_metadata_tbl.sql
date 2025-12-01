@@ -50,6 +50,14 @@ AS $function$
         SELECT * FROM pdcd_schema.get_table_references_md5(p_table_list)
         UNION ALL
         SELECT * FROM pdcd_schema.get_table_triggers_md5(p_table_list)
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_table_sequences_md5(p_table_list)
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_table_functions_md5(p_table_list)
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_views_md5(p_table_list)
+        UNION ALL
+        SELECT * FROM pdcd_schema.get_mat_views_md5(p_table_list)
     ),
     inserted AS (
         INSERT INTO pdcd_schema.md5_metadata_tbl (
@@ -67,6 +75,7 @@ AS $function$
             ns.snapshot_id,
             c.schema_name,
             c.object_type,
+            -- COALESCE(c.object_type_name, '') AS object_type_name,\
             c.object_type_name,
             c.object_subtype,
             c.object_subtype_name,
@@ -96,7 +105,7 @@ AS $function$
     ORDER BY i.schema_name, i.object_type_name, i.object_subtype;
 $function$;
 
--- \i '/Users/manoj_anumalla/Documents/GitHub/Sql_Functions/pcdc_tracking/sql_functions/load_and_compare/load_md5_metadata_tbl.sql'
+-- \i '/Users/jagdish_pandre/meta_data_report/PDCD/PDCD/sql_dev/load_compare/load_md5_metadata_tbl.sql'
 
 
 -- md5_metadata_tbl
@@ -105,3 +114,11 @@ $function$;
 
 -- SELECT * FROM pdcd_schema.load_snapshot_tbl();
 -- SELECT * FROM pdcd_schema.load_md5_metadata_tbl(ARRAY['analytics_schema']);
+
+SELECT * FROM pdcd_schema.get_table_sequences_md5(ARRAY['hr']);
+ schema_name | object_type | object_type_name | object_subtype |     object_subtype_name      |                                                                                   object_subtype_details                                                                                   |            object_md5
+-------------+-------------+------------------+----------------+------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------
+ hr          | Table       | attendance       | Sequence       | attendance_attendance_id_seq | owned_by:hr.attendance.attendance_id,sequence_type:SERIAL,privileges:,data_type:integer,start_value:1,minimum_value:1,maximum_value:2147483647,increment_by:1,cycle_option:NO,cache_size:1 | e686e8fa14c6b7bb56bc2e2c8f26cfb9
+ hr          | Table       | departments      | Sequence       | departments_dept_id_seq      | owned_by:hr.departments.dept_id,sequence_type:SERIAL,privileges:,data_type:integer,start_value:1,minimum_value:1,maximum_value:2147483647,increment_by:1,cycle_option:NO,cache_size:1      | db2661b0f29b4dad323b18677da8127f
+ hr          | Table       |                  | Sequence       | seq_employee_id              | owned_by:,sequence_type:MANUAL,privileges:,data_type:bigint,start_value:2000,minimum_value:1,maximum_value:9223372036854775807,increment_by:1,cycle_option:NO,cache_size:1                 | 2781a1f76666060c0a7fe7f2b2ad8e3d
+(3 rows)

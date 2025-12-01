@@ -53,6 +53,36 @@ CREATE TABLE pdcd_schema.md5_metadata_staging_tbl (
 );
 -- ==============================================================
 
+--=================================================
+-- Table: pdcd_schema.md5_metadata_staging_function
+--=================================================
+DROP TABLE IF EXISTS pdcd_schema.md5_metadata_staging_functions;
+CREATE TABLE pdcd_schema.md5_metadata_staging_functions (
+  metadata_id BIGSERIAL PRIMARY KEY,
+  snapshot_id INT NOT NULL REFERENCES pdcd_schema.snapshot_tbl(snapshot_id) ON DELETE CASCADE,
+  schema_name TEXT NOT NULL,
+  object_type TEXT NOT NULL,
+  object_type_name TEXT NOT NULL,
+  object_subtype TEXT, -- Not Required
+  object_subtype_name TEXT, -- Not Required
+  object_subtype_details TEXT,
+  object_md5 TEXT NOT NULL,
+  processed_time TIMESTAMP DEFAULT clock_timestamp()
+);
+
+--=================================================
+-- Table: pdcd_schema.md5_metrics_tbl
+--=================================================
+DROP TABLE IF EXISTS pdcd_schema.md5_metrics_tbl;
+
+CREATE TABLE pdcd_schema.md5_metrics_tbl (
+    metrics_id     BIGSERIAL PRIMARY KEY,
+    snapshot_id    INT NOT NULL,
+    metric_name    TEXT NOT NULL,
+    metric_value   INT NOT NULL,
+    metrics_time   TIMESTAMP DEFAULT clock_timestamp()
+);
+
 Create schema back_up_schema;
 
 CREATE TABLE back_up_schema.md5_metadata_tbl AS

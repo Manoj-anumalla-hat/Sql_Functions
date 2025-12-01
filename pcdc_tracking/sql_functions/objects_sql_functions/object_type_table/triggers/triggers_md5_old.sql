@@ -1,3 +1,7 @@
+
+
+
+
 CREATE OR REPLACE FUNCTION pdcd_schema.get_table_triggers_md5(
     p_table_list TEXT[] DEFAULT NULL
 )
@@ -50,7 +54,3 @@ BEGIN
     ORDER BY gtd.schema_name, gtd.table_name, gtd.trigger_name;
 END;
 $function$;
-
--- \i '/Users/manoj_anumalla/Desktop/PDCD/PDCD/sql_dev/Objects/table_objects/triggers/trigger_details_md5.sql'
--- drop function get_table_triggers_md5(TEXT[]);
--- SELECT * FROM get_table_triggers_md5(ARRAY['analytics_schema']);

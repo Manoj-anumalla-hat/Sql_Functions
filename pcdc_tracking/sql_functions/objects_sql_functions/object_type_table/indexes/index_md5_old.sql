@@ -46,14 +46,15 @@ BEGIN
     ORDER BY gid.schema_name, gid.table_name, gid.index_name;
 END;
 $function$;
-
--- \i '/Users/manoj_anumalla/Desktop/PDCD/PDCD/sql_dev/Objects/table_objects/indexes/get_table_indexes_md5.sql'
-
--- drop function get_table_indexes_md5(TEXT[]);
--- SELECT * FROM pdcd_schema.get_table_indexes_md5(ARRAY['analytics_schema']);
--- SELECT * FROM get_table_indexes_md5(ARRAY['companies.employees']);
+--- select * from pdcd_schema.get_table_indexes_md5();
 
 
--- SELECT * FROM get_table_indexes_md5();
--- SELECT * FROM get_table_indexes_md5(ARRAY['public','legacy']);
--- SELECT * FROM get_table_all_get_table_indexes_md5indexes_md5(ARRAY['public.people','sales.region_sales_west']);
+
+
+
+
+
+
+
+
+
